@@ -11,16 +11,12 @@ class CameraView extends StatefulWidget {
       required this.customPaint,
       required this.onImage,
       this.onCameraFeedReady,
-      this.onDetectorViewModeChanged,
-      this.onCameraLensDirectionChanged,
       this.initialCameraLensDirection = CameraLensDirection.back})
       : super(key: key);
 
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
   final VoidCallback? onCameraFeedReady;
-  final VoidCallback? onDetectorViewModeChanged;
-  final Function(CameraLensDirection direction)? onCameraLensDirectionChanged;
   final CameraLensDirection initialCameraLensDirection;
 
   @override
@@ -33,32 +29,15 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = -1;
   double _currentZoomLevel = 1.0;
   double _minAvailableZoom = 1.0;
-  double _maxAvailableZoom = 1.0;
+  double _maxAvailableZoom = 10.0;
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
-  bool _changingCameraLens = false;
 
   @override
   void initState() {
     super.initState();
-
-    _initialize();
-  }
-
-  void _initialize() async {
-    if (_cameras.isEmpty) {
-      _cameras = await availableCameras();
-    }
-    for (var i = 0; i < _cameras.length; i++) {
-      if (_cameras[i].lensDirection == widget.initialCameraLensDirection) {
-        _cameraIndex = i;
-        break;
-      }
-    }
-    if (_cameraIndex != -1) {
-      _startLiveFeed();
-    }
+    _initializeCamera();
   }
 
   @override
@@ -69,7 +48,25 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _liveFeedBody());
+    return Scaffold(
+      body: _liveFeedBody(),
+    );
+  }
+
+  void _initializeCamera() async {
+    if (_cameras.isEmpty) {
+      _cameras = await availableCameras();
+    }
+    // Check and Set Camera index equivalent to back facing
+    for (var i = 0; i < _cameras.length; i++) {
+      if (_cameras[i].lensDirection == widget.initialCameraLensDirection) {
+        _cameraIndex = i;
+        break;
+      }
+    }
+    if (_cameraIndex != -1) {
+      _startLiveFeed();
+    }
   }
 
   Widget _liveFeedBody() {
@@ -82,18 +79,12 @@ class _CameraViewState extends State<CameraView> {
         fit: StackFit.expand,
         children: <Widget>[
           Center(
-            child: _changingCameraLens
-                ? Center(
-                    child: const Text('Changing camera lens'),
-                  )
-                : CameraPreview(
-                    _controller!,
-                    child: widget.customPaint,
-                  ),
+            child: CameraPreview(
+              _controller!,
+              child: widget.customPaint,
+            ),
           ),
           _backButton(),
-          _switchLiveCameraToggle(),
-          _detectionViewModeToggle(),
           _zoomControl(),
           _exposureControl(),
         ],
@@ -102,64 +93,28 @@ class _CameraViewState extends State<CameraView> {
   }
 
   Widget _backButton() => Positioned(
-        top: 40,
+        top: 30,
         left: 8,
         child: SizedBox(
           height: 50.0,
           width: 50.0,
           child: FloatingActionButton(
-            heroTag: Object(),
             onPressed: () => Navigator.of(context).pop(),
-            backgroundColor: Colors.black54,
-            child: Icon(
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            child: const Icon(
               Icons.arrow_back_ios_outlined,
               size: 20,
-            ),
-          ),
-        ),
-      );
-
-  Widget _detectionViewModeToggle() => Positioned(
-        bottom: 8,
-        left: 8,
-        child: SizedBox(
-          height: 50.0,
-          width: 50.0,
-          child: FloatingActionButton(
-            heroTag: Object(),
-            onPressed: widget.onDetectorViewModeChanged,
-            backgroundColor: Colors.black54,
-            child: Icon(
-              Icons.photo_library_outlined,
-              size: 25,
-            ),
-          ),
-        ),
-      );
-
-  Widget _switchLiveCameraToggle() => Positioned(
-        bottom: 8,
-        right: 8,
-        child: SizedBox(
-          height: 50.0,
-          width: 50.0,
-          child: FloatingActionButton(
-            heroTag: Object(),
-            onPressed: _switchLiveCamera,
-            backgroundColor: Colors.black54,
-            child: Icon(
-              Platform.isIOS
-                  ? Icons.flip_camera_ios_outlined
-                  : Icons.flip_camera_android_outlined,
-              size: 25,
+              color: Colors.white,
             ),
           ),
         ),
       );
 
   Widget _zoomControl() => Positioned(
-        bottom: 16,
-        left: 0,
+        top: 30,
+        left: 40,
         right: 0,
         child: Align(
           alignment: Alignment.bottomCenter,
@@ -172,8 +127,8 @@ class _CameraViewState extends State<CameraView> {
                 Expanded(
                   child: Slider(
                     value: _currentZoomLevel,
-                    min: _minAvailableZoom,
-                    max: _maxAvailableZoom,
+                    min: 1,
+                    max: 3,
                     activeColor: Colors.white,
                     inactiveColor: Colors.white30,
                     onChanged: (value) async {
@@ -195,7 +150,7 @@ class _CameraViewState extends State<CameraView> {
                     child: Center(
                       child: Text(
                         '${_currentZoomLevel.toStringAsFixed(1)}x',
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
@@ -207,10 +162,10 @@ class _CameraViewState extends State<CameraView> {
       );
 
   Widget _exposureControl() => Positioned(
-        top: 40,
-        right: 8,
+        top: 80,
+        right: 0,
         child: ConstrainedBox(
-          constraints: BoxConstraints(
+          constraints: const BoxConstraints(
             maxHeight: 250,
           ),
           child: Column(children: [
@@ -225,7 +180,7 @@ class _CameraViewState extends State<CameraView> {
                 child: Center(
                   child: Text(
                     '${_currentExposureOffset.toStringAsFixed(1)}x',
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ),
@@ -259,7 +214,6 @@ class _CameraViewState extends State<CameraView> {
     final camera = _cameras[_cameraIndex];
     _controller = CameraController(
       camera,
-      // Set to ResolutionPreset.high. Do NOT set it to ResolutionPreset.max because for some phones does NOT work.
       ResolutionPreset.high,
       enableAudio: false,
       imageFormatGroup: Platform.isAndroid
@@ -288,11 +242,7 @@ class _CameraViewState extends State<CameraView> {
         if (widget.onCameraFeedReady != null) {
           widget.onCameraFeedReady!();
         }
-        if (widget.onCameraLensDirectionChanged != null) {
-          widget.onCameraLensDirectionChanged!(camera.lensDirection);
-        }
       });
-      setState(() {});
     });
   }
 
@@ -300,15 +250,6 @@ class _CameraViewState extends State<CameraView> {
     await _controller?.stopImageStream();
     await _controller?.dispose();
     _controller = null;
-  }
-
-  Future _switchLiveCamera() async {
-    setState(() => _changingCameraLens = true);
-    _cameraIndex = (_cameraIndex + 1) % _cameras.length;
-
-    await _stopLiveFeed();
-    await _startLiveFeed();
-    setState(() => _changingCameraLens = false);
   }
 
   void _processCameraImage(CameraImage image) {
@@ -333,8 +274,7 @@ class _CameraViewState extends State<CameraView> {
     // in both platforms `rotation` and `camera.lensDirection` can be used to compensate `x` and `y` coordinates on a canvas: https://github.com/flutter-ml/google_ml_kit_flutter/blob/master/packages/example/lib/vision_detector_views/painters/coordinates_translator.dart
     final camera = _cameras[_cameraIndex];
     final sensorOrientation = camera.sensorOrientation;
-    // print(
-    //     'lensDirection: ${camera.lensDirection}, sensorOrientation: $sensorOrientation, ${_controller?.value.deviceOrientation} ${_controller?.value.lockedCaptureOrientation} ${_controller?.value.isCaptureOrientationLocked}');
+
     InputImageRotation? rotation;
     if (Platform.isIOS) {
       rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
@@ -342,19 +282,14 @@ class _CameraViewState extends State<CameraView> {
       var rotationCompensation =
           _orientations[_controller!.value.deviceOrientation];
       if (rotationCompensation == null) return null;
-      if (camera.lensDirection == CameraLensDirection.front) {
-        // front-facing
-        rotationCompensation = (sensorOrientation + rotationCompensation) % 360;
-      } else {
+      if (camera.lensDirection == CameraLensDirection.back) {
         // back-facing
         rotationCompensation =
             (sensorOrientation - rotationCompensation + 360) % 360;
       }
       rotation = InputImageRotationValue.fromRawValue(rotationCompensation);
-      // print('rotationCompensation: $rotationCompensation');
     }
     if (rotation == null) return null;
-    // print('final rotation: $rotation');
 
     // get image format
     final format = InputImageFormatValue.fromRawValue(image.format.raw);

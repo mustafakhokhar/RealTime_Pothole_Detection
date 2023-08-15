@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
-import 'package:pothole_detection_realtime/Widgets/ObjectPainter.dart';
 
 class MLkitController extends GetxController {
   late CameraController cameraController;
@@ -137,13 +135,6 @@ class MLkitController extends GetxController {
 
     final objects = await objectDetector.processImage(image);
     detectedObjects.assignAll(objects);
-
-    final painter = ObjectDetectorPainter(
-      objects,
-      image.metadata!.size,
-      image.metadata!.rotation,
-      CameraLensDirection.back,
-    );
 
     for (DetectedObject detectedObject in detectedObjects) {
       final rect = detectedObject.boundingBox;

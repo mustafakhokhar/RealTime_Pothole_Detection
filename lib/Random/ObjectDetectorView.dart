@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
-import 'package:pothole_detection_realtime/Random/DetectorView.dart';
+import 'package:pothole_detection_realtime/Random/Camera.dart';
 import 'package:pothole_detection_realtime/Widgets/ObjectPainter.dart';
 
 class ObjectDetectorView extends StatefulWidget {
@@ -15,10 +15,9 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
   bool _canProcess = false;
   bool _isBusy = false;
   CustomPaint? _customPaint;
-  String? _text;
   var _cameraLensDirection = CameraLensDirection.back;
-  int _option = 0;
-  final _options = {
+  int _modelOption = 0;
+  final _modelOptions = {
     'default': '',
     'object_custom': 'object_labeler.tflite',
     'fruits': 'object_labeler_fruits.tflite',
@@ -50,87 +49,70 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: [
-        DetectorView(
-          title: 'Object Detector',
-          customPaint: _customPaint,
-          text: _text,
-          onImage: _processImage,
-          initialCameraLensDirection: _cameraLensDirection,
-          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
-          onCameraFeedReady: _initializeDetector,
-          initialDetectionMode: DetectorViewMode.values[_mode.index],
-          onDetectorViewModeChanged: _onScreenModeChanged,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: [
+            CameraView(
+              customPaint: _customPaint,
+              onImage: _processImage,
+              onCameraFeedReady: _initializeDetector,
+              initialCameraLensDirection: _cameraLensDirection,
+            ),
+            // Bottom Bar Menu for Models Choice
+            Positioned(
+              bottom: 19.2,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.blue.withOpacity(0.6),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: _buildDropdown(),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        Positioned(
-            top: 30,
-            left: 100,
-            right: 100,
-            child: Row(
-              children: [
-                Spacer(),
-                Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: _buildDropdown(),
-                    )),
-                Spacer(),
-              ],
-            )),
-      ]),
+      ),
     );
   }
 
   Widget _buildDropdown() => DropdownButton<int>(
-        value: _option,
-        icon: const Icon(Icons.arrow_downward),
-        elevation: 16,
-        style: const TextStyle(color: Colors.blue),
-        underline: Container(
-          height: 2,
-          color: Colors.blue,
+        value: _modelOption,
+        icon: const Icon(
+          Icons.arrow_upward,
+          color: Colors.white,
         ),
+        elevation: 16,
+        style: const TextStyle(color: Colors.white),
+        dropdownColor: Colors.blue.withOpacity(0.6),
         onChanged: (int? option) {
           if (option != null) {
             setState(() {
-              _option = option;
+              _modelOption = option;
               _initializeDetector();
             });
           }
         },
-        items: List<int>.generate(_options.length, (i) => i)
+        items: List<int>.generate(_modelOptions.length, (i) => i)
             .map<DropdownMenuItem<int>>((option) {
           return DropdownMenuItem<int>(
             value: option,
-            child: Text(_options.keys.toList()[option]),
+            child: Text(_modelOptions.keys.toList()[option]),
           );
         }).toList(),
       );
-
-  void _onScreenModeChanged(DetectorViewMode mode) {
-    switch (mode) {
-      case DetectorViewMode.gallery:
-        _mode = DetectionMode.single;
-        _initializeDetector();
-        return;
-
-      case DetectorViewMode.liveFeed:
-        _mode = DetectionMode.stream;
-        _initializeDetector();
-        return;
-    }
-  }
 
   void _initializeDetector() async {
     _objectDetector?.close();
     _objectDetector = null;
     print('Set detector in mode: $_mode');
 
-    if (_option == 0) {
+    if (_modelOption == 0) {
       // use the default model
       print('use the default model');
       final options = ObjectDetectorOptions(
@@ -139,7 +121,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
         multipleObjects: true,
       );
       _objectDetector = ObjectDetector(options: options);
-    } 
+    }
     // else if (_option > 0 && _option <= _options.length) {
     //   // use a custom model
     //   // make sure to add tflite model to assets/ml
@@ -177,9 +159,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     if (!_canProcess) return;
     if (_isBusy) return;
     _isBusy = true;
-    setState(() {
-      _text = '';
-    });
+    setState(() {});
     final objects = await _objectDetector!.processImage(inputImage);
     // print('Objects found: ${objects.length}\n\n');
     if (inputImage.metadata?.size != null &&
@@ -191,14 +171,13 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
         _cameraLensDirection,
       );
       _customPaint = CustomPaint(painter: painter);
+      // String text = 'Objects found: ${objects.length}\n\n';
+      // for (final object in objects) {
+      //   text +=
+      //       'Object:  trackingId: ${object.trackingId} - ${object.labels.map((e) => e.text)}\n\n';
+      //   print(text);
+      // }
     } else {
-      String text = 'Objects found: ${objects.length}\n\n';
-      for (final object in objects) {
-        text +=
-            'Object:  trackingId: ${object.trackingId} - ${object.labels.map((e) => e.text)}\n\n';
-      }
-      _text = text;
-      // TODO: set _customPaint to draw boundingRect on top of image
       _customPaint = null;
     }
     _isBusy = false;
