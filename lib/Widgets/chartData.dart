@@ -43,13 +43,13 @@ LineChartData mainData() {
     lineBarsData: [
       LineChartBarData(
         spots: [
-          FlSpot(0, 3),
-          FlSpot(2.6, 2),
-          FlSpot(4.9, 5),
-          FlSpot(6.8, 3.1),
-          FlSpot(8, 4),
-          FlSpot(9.5, 3),
-          FlSpot(11, 4),
+          const FlSpot(0, 3),
+          const FlSpot(2.6, 2),
+          const FlSpot(4.9, 5),
+          const FlSpot(6.8, 3.1),
+          const FlSpot(8, 4),
+          const FlSpot(9.5, 3),
+          const FlSpot(11, 4),
         ],
         isCurved: true,
         barWidth: 3,

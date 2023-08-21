@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tflite/tflite.dart';
-import 'dart:math' as math;
 
 class DetectionController extends GetxController {
   late CameraController cameraController;
@@ -83,14 +82,14 @@ class DetectionController extends GetxController {
       if (recognitions!.isNotEmpty) {
         print("recognitions: $recognitions");
 
-        var _h = recognitions.first["rect"]["h"];
-        var _w = recognitions.first["rect"]["w"];
-        var _x = recognitions.first["rect"]["x"];
-        var _y = recognitions.first["rect"]["y"];
-        x = _x * image.width;
-        y = _y * image.height;
-        objWidth = _w * image.width;
-        objHeight = _h * image.height;
+        var h = recognitions.first["rect"]["h"];
+        var w = recognitions.first["rect"]["w"];
+        var x = recognitions.first["rect"]["x"];
+        var y = recognitions.first["rect"]["y"];
+        x = x * image.width;
+        y = y * image.height;
+        objWidth = w * image.width;
+        objHeight = h * image.height;
         objectLabel = recognitions.first["detectedClass"].toString();
 
         // var screenH = Get.height;

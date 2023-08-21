@@ -24,7 +24,7 @@ class ObjectDetection extends StatelessWidget {
                           width: controller.objWidth,
                           height: controller.objHeight,
                           child: Container(
-                            padding: EdgeInsets.only(top: 5.0, left: 5.0),
+                            padding: const EdgeInsets.only(top: 5.0, left: 5.0),
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: Colors.amber,

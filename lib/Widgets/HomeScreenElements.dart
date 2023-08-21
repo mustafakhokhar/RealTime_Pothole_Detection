@@ -2,8 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pothole_detection_realtime/Random/ObjectDetectorView.dart';
-import 'package:pothole_detection_realtime/Views/objectDetection.dart';
-import 'package:pothole_detection_realtime/Views/objectDetectionMLkit.dart';
 import 'package:pothole_detection_realtime/Widgets/chartData.dart';
 
 class HomeScreenElements extends StatelessWidget {
@@ -63,7 +61,7 @@ class HomeScreenElements extends StatelessWidget {
                   ),
                   Positioned(
                     bottom: 0,
-                    child: Container(
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width - 40,
                       height: 150,
                       child: LineChart(
@@ -111,7 +109,7 @@ class HomeScreenElements extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                Get.to(const ObjectDetection());
+                // Get.to(const ObjectDetection());
               },
             ),
             GestureDetector(
@@ -141,40 +139,43 @@ class HomeScreenElements extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                Get.to(ObjectDetectorView());
+                // Get.to(const ObjectDetectorView());
               },
             ),
           ],
         ),
-        GestureDetector(
-          child: SizedBox(
-            width: Get.width * 0.45,
-            height: Get.height * 0.15,
-            child: const Card(
-              color: Colors.white,
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.blueGrey, width: 0.5),
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.camera_alt_outlined),
-                  Text(
-                    'Google ML Kit',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 17,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: GestureDetector(
+            child: SizedBox(
+              width: Get.width * 0.45,
+              height: Get.height * 0.15,
+              child: const Card(
+                color: Colors.white,
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Colors.blueGrey, width: 0.5),
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.camera_alt_outlined),
+                    Text(
+                      'Google ML Kit',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 17,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+            onTap: () {
+              Get.to(const ObjectDetectorView());
+            },
           ),
-          onTap: () {
-            Get.to(const MLkitDetection());
-          },
         ),
       ],
     );

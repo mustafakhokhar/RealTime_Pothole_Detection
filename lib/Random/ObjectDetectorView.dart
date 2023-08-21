@@ -2,42 +2,33 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
 import 'package:pothole_detection_realtime/Random/Camera.dart';
-import 'package:pothole_detection_realtime/Widgets/ObjectPainter.dart';
+import 'package:pothole_detection_realtime/Helper/ObjectPainter.dart';
+import 'package:pothole_detection_realtime/Helper/assetsPicker.dart';
 
 class ObjectDetectorView extends StatefulWidget {
+  const ObjectDetectorView({super.key});
+
   @override
   State<ObjectDetectorView> createState() => _ObjectDetectorView();
 }
 
 class _ObjectDetectorView extends State<ObjectDetectorView> {
   ObjectDetector? _objectDetector;
-  DetectionMode _mode = DetectionMode.stream;
+  final DetectionMode _mode = DetectionMode.stream;
   bool _canProcess = false;
   bool _isBusy = false;
   CustomPaint? _customPaint;
-  var _cameraLensDirection = CameraLensDirection.back;
+  final _cameraLensDirection = CameraLensDirection.back;
   int _modelOption = 0;
   final _modelOptions = {
     'default': '',
-    'object_custom': 'object_labeler.tflite',
-    'fruits': 'object_labeler_fruits.tflite',
-    'flowers': 'object_labeler_flowers.tflite',
-    'birds': 'lite-model_aiy_vision_classifier_birds_V1_3.tflite',
-    // https://tfhub.dev/google/lite-model/aiy/vision/classifier/birds_V1/3
-
-    'food': 'lite-model_aiy_vision_classifier_food_V1_1.tflite',
-    // https://tfhub.dev/google/lite-model/aiy/vision/classifier/food_V1/1
-
-    'plants': 'lite-model_aiy_vision_classifier_plants_V1_3.tflite',
-    // https://tfhub.dev/google/lite-model/aiy/vision/classifier/plants_V1/3
-
-    'mushrooms': 'lite-model_models_mushroom-identification_v1_1.tflite',
-    // https://tfhub.dev/bohemian-visual-recognition-alliance/lite-model/models/mushroom-identification_v1/1
-
-    'landmarks':
-        'lite-model_on_device_vision_classifier_landmarks_classifier_north_america_V1_1.tflite',
-    // https://tfhub.dev/google/lite-model/on_device_vision/classifier/landmarks_classifier_north_america_V1/1
+    // 'object_custom': 'object_labeler.tflite',
+    'EfficientDet': 'efficientnet_lite4_int8_2.tflite',
+    // 'flowers': 'object_labeler_flowers.tflite',
+    // 'birds': 'lite-model_aiy_vision_classifier_birds_V1_3.tflite',
+    // // https://tfhub.dev/google/lite-model/aiy/vision/classifier/birds_V1/3
   };
+  final Set<int> _detectedObjectIds = {};
 
   @override
   void dispose() {
@@ -49,7 +40,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Stack(
@@ -121,21 +112,20 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
         multipleObjects: true,
       );
       _objectDetector = ObjectDetector(options: options);
+    } else if (_modelOption > 0 && _modelOption <= _modelOptions.length) {
+      // use a custom model
+      final option =
+          _modelOptions[_modelOptions.keys.toList()[_modelOption]] ?? '';
+      final modelPath = await getAssetPath('assets/$option');
+      print('use custom model path: $modelPath');
+      final options = LocalObjectDetectorOptions(
+        mode: _mode,
+        modelPath: modelPath,
+        classifyObjects: true,
+        multipleObjects: true,
+      );
+      _objectDetector = ObjectDetector(options: options);
     }
-    // else if (_option > 0 && _option <= _options.length) {
-    //   // use a custom model
-    //   // make sure to add tflite model to assets/ml
-    //   final option = _options[_options.keys.toList()[_option]] ?? '';
-    //   final modelPath = await getAssetPath('assets/ml/$option');
-    //   print('use custom model path: $modelPath');
-    //   final options = LocalObjectDetectorOptions(
-    //     mode: _mode,
-    //     modelPath: modelPath,
-    //     classifyObjects: true,
-    //     multipleObjects: true,
-    //   );
-    //   _objectDetector = ObjectDetector(options: options);
-    // }
 
     // uncomment next lines if you want to use a remote model
     // make sure to add model to firebase
@@ -160,10 +150,12 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     if (_isBusy) return;
     _isBusy = true;
     setState(() {});
+
     final objects = await _objectDetector!.processImage(inputImage);
-    // print('Objects found: ${objects.length}\n\n');
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null) {
+      // Send the Data to Painter {for bounding box and Txt}
+
       final painter = ObjectDetectorPainter(
         objects,
         inputImage.metadata!.size,
@@ -177,6 +169,23 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
       //       'Object:  trackingId: ${object.trackingId} - ${object.labels.map((e) => e.text)}\n\n';
       //   print(text);
       // }
+
+      // Tracking id is unique for each object
+      // Filter out already detected objects based on their tracking IDs
+      final newObjects = objects
+          .where((object) => !_detectedObjectIds.contains(object.trackingId))
+          .toList();
+      _detectedObjectIds.addAll(newObjects.map((object) => object.trackingId!));
+
+      // Use the Data to send to the server
+      for (DetectedObject detectedObject in newObjects) {
+        if (detectedObject.labels.isNotEmpty) {
+          final label = detectedObject.labels
+              .reduce((a, b) => a.confidence > b.confidence ? a : b);
+          print('Label: ${label.text} - Confidence: ${label.confidence} - '
+              'Index: ${label.index} - EntityId: ${detectedObject.trackingId.toString()} \n}');
+        }
+      }
     } else {
       _customPaint = null;
     }
