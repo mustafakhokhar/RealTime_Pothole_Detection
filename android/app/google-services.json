@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1091069666405",
+    "project_id": "sprojpotholeapp",
+    "storage_bucket": "sprojpotholeapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1091069666405:android:832faf37301a2b1b90528c",
+        "android_client_info": {
+          "package_name": "com.example.pothole_detection_realtime"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9zKLF0zzkoCSz5DZu0KfvzerC8N5OYPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

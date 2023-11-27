@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAU-oFiao8eGxNYLQNcg7Qe68qqg4Pywjo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1091069666405</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.potholeDetectionRealtime</string>
+	<key>PROJECT_ID</key>
+	<string>sprojpotholeapp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sprojpotholeapp.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1091069666405:ios:c2206bb6f93ee95f90528c</string>
+</dict>
+</plist>

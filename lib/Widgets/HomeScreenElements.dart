@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:pothole_detection_realtime/Random/ObjectDetectorView.dart';
+import 'package:pothole_detection_realtime/Views/ObjectDetectorView.dart';
 import 'package:pothole_detection_realtime/Widgets/chartData.dart';
 
 class HomeScreenElements extends StatelessWidget {
@@ -84,8 +83,8 @@ class HomeScreenElements extends StatelessWidget {
           children: [
             GestureDetector(
               child: SizedBox(
-                width: Get.width * 0.45,
-                height: Get.height * 0.15,
+                width: MediaQuery.of(context).size.width * 0.45,
+                height: MediaQuery.of(context).size.height * 0.15,
                 child: const Card(
                   color: Colors.white,
                   elevation: 1,
@@ -109,13 +108,14 @@ class HomeScreenElements extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                // Get.to(const ObjectDetection());
+                // Navigator.of(context).push(MaterialPageRoute(
+                //     builder: (context) => const ObjectDetectionTF()));
               },
             ),
             GestureDetector(
               child: SizedBox(
-                width: Get.width * 0.45,
-                height: Get.height * 0.15,
+                width: MediaQuery.of(context).size.width * 0.45,
+                height: MediaQuery.of(context).size.height * 0.15,
                 child: const Card(
                   color: Colors.white,
                   elevation: 1,
@@ -148,8 +148,8 @@ class HomeScreenElements extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           child: GestureDetector(
             child: SizedBox(
-              width: Get.width * 0.45,
-              height: Get.height * 0.15,
+              width: MediaQuery.of(context).size.width * 0.45,
+              height: MediaQuery.of(context).size.height * 0.15,
               child: const Card(
                 color: Colors.white,
                 elevation: 1,
@@ -173,7 +173,8 @@ class HomeScreenElements extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Get.to(const ObjectDetectorView());
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const ObjectDetectorView()));
             },
           ),
         ),
