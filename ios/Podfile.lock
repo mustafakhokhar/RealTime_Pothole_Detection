@@ -711,6 +711,8 @@ PODS:
     - PromisesObjC (~> 2.1)
   - FirebaseSharedSwift (10.18.0)
   - Flutter (1.0.0)
+  - flutter_pytorch (0.0.1):
+    - Flutter
   - google_mlkit_commons (0.5.0):
     - Flutter
     - MLKitVision
@@ -920,6 +922,7 @@ DEPENDENCIES:
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
+  - flutter_pytorch (from `.symlinks/plugins/flutter_pytorch/ios`)
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
   - google_mlkit_object_detection (from `.symlinks/plugins/google_mlkit_object_detection/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -973,6 +976,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_core/ios"
   Flutter:
     :path: Flutter
+  flutter_pytorch:
+    :path: ".symlinks/plugins/flutter_pytorch/ios"
   google_mlkit_commons:
     :path: ".symlinks/plugins/google_mlkit_commons/ios"
   google_mlkit_object_detection:
@@ -1000,6 +1005,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: e842042ec6ac1fd2e37d7706363ebe7f662afea4
   FirebaseSharedSwift: 62e248642c0582324d0390706cadd314687c116b
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_pytorch: 35267788c5eccf12c6dabd605c9e74b7be8c261b
   google_mlkit_commons: 9765447bd869c5d4f750dbd01475c8c42fd47aec
   google_mlkit_object_detection: ffb20134d8d2455f40ce980109163c5db5e3e300
   GoogleAppMeasurement: 4dcddfc7f102825c1c4e6422cb35567b101881a7

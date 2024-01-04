@@ -45,6 +45,7 @@ dependencies:
   cloud_firestore: ^4.13.1
   firebase_analytics: ^10.7.0
   tflite_flutter: ^0.10.3
+  flutter_pytorch: ^1.0.1
 
 dev_dependencies:
   flutter_test:

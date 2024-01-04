@@ -27,6 +27,8 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     'modelB': 'modelB.tflite',
     'model_int8': 'model_int8.tflite',
     'model': 'model.tflite',
+    'EffNet0': 'effecientNet0_multiclass_int8.tflite',
+    'MobNet2': 'model_mobilenetv2twoclasses_tuned.tflite',
   };
   final Set<int> _detectedObjectIds = {};
 
