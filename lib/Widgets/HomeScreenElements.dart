@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:pothole_detection_realtime/Views/GoogleMaps.dart';
 import 'package:pothole_detection_realtime/Views/ObjectDetectorView.dart';
 import 'package:pothole_detection_realtime/Views/PytorchHome.dart';
 import 'package:pothole_detection_realtime/Widgets/chartData.dart';
@@ -82,6 +83,7 @@ class HomeScreenElements extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            // Realtime Object Detection Button
             GestureDetector(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.45,
@@ -113,6 +115,7 @@ class HomeScreenElements extends StatelessWidget {
                 //     builder: (context) => const ObjectDetectionTF()));
               },
             ),
+            // Maps Button
             GestureDetector(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.45,
@@ -140,46 +143,12 @@ class HomeScreenElements extends StatelessWidget {
                 ),
               ),
               onTap: () {
-                // Get.to(const ObjectDetectorView());
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CustomMaps()));
               },
             ),
           ],
         ),
-        // Google ML kit Button old
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        //   child: GestureDetector(
-        //     child: SizedBox(
-        //       width: MediaQuery.of(context).size.width * 0.45,
-        //       height: MediaQuery.of(context).size.height * 0.15,
-        //       child: const Card(
-        //         color: Colors.white,
-        //         elevation: 1,
-        //         shape: RoundedRectangleBorder(
-        //           side: BorderSide(color: Colors.blueGrey, width: 0.5),
-        //           borderRadius: BorderRadius.all(Radius.circular(12)),
-        //         ),
-        //         child: Column(
-        //           mainAxisAlignment: MainAxisAlignment.center,
-        //           children: [
-        //             Icon(Icons.camera_alt_outlined),
-        //             Text(
-        //               'Google ML Kit',
-        //               textAlign: TextAlign.center,
-        //               style: TextStyle(
-        //                 fontSize: 17,
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //     onTap: () {
-        //       Navigator.of(context).push(MaterialPageRoute(
-        //           builder: (context) => const ObjectDetectorView()));
-        //     },
-        //   ),
-        // ),
         // Google ML kit Button and Pytorch Button
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -196,25 +165,26 @@ class HomeScreenElements extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                   child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.camera_alt_outlined),
-                    Text(
-                      'Google ML Kit',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.camera_alt_outlined),
+                      Text(
+                        'Google ML Kit',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 17,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 ),
               ),
               onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const ObjectDetectorView()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ObjectDetectorView()));
               },
             ),
+            // Pytorch Button
             GestureDetector(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.45,
@@ -242,8 +212,8 @@ class HomeScreenElements extends StatelessWidget {
                 ),
               ),
               onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const PytorchHome()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const PytorchHome()));
               },
             ),
           ],
